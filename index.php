@@ -23,7 +23,7 @@ if (isset($_POST['update'])) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Portofolio</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -60,50 +60,52 @@ if (isset($_POST['update'])) {
     </div>
     <div class="forto">
         <h4 id="porto">Portofolio</h4>
-        <table>
-            <tr>
-                <th>no</th>
-                <th>Nama kegiatan</th>
-                <th>waktu kegiatan</th>
-                <th>bukti kegiatan</th>
-            </tr>
-            <?php
-            $no = 1;
-            $query = mysqli_query($koneksi, "SELECT * FROM portofolio");
-            while ($row = mysqli_fetch_assoc($query)) {
-                $tanggal = date('d F Y', strtotime($row['waktu_kegiatan']));
-                echo "<tr>
-                    <td>{$no}</td>
-                    <td>{$row['nama_kegiatan']}</td>
-                    <td>{$tanggal}</td>
-                    <td>
-                        <a href='Bukti/{$row['bukti']}' target='_blank'>
-                        <button class='btn-bukti'>Lihat bukti</button></a>
-                        <button class='btn-edit' data-id='{$row['id']}' data-nama='{$row['nama_kegiatan']}' data-waktu='{$row['waktu_kegiatan']}'>Edit</button>
-                        <a href='hapus.php?id={$row['id']}' onclick=\"return confirm('Yakin ingin menghapus?')\">
-                        <button class='btn-hapus'>Hapus</button>
-                        </a>
-                    </td>
-                </tr>";
-                $no++;
-            }
-            ?>
-            <form action="tambah.php" method="POST" enctype="multipart/form-data">
+        <div class="table-responsive">
+            <table>
                 <tr>
-                    <td></td>
-                    <td>
-                        <input type="text" name="nama_kegiatan" placeholder="Nama Kegiatan" required style="width: 95%;">
-                    </td>
-                    <td>
-                        <input type="date" name="waktu_kegiatan" placeholder="Waktu Kegiatan" required style="width: 95%;">
-                    </td>
-                    <td>
-                        <input type="file" name="bukti" required>
-                        <button type="submit" name="simpan" class="btn-bukti" style="margin-top:5px;">Simpan</button>
-                    </td>
+                    <th>no</th>
+                    <th>Nama kegiatan</th>
+                    <th>waktu kegiatan</th>
+                    <th>bukti kegiatan</th>
                 </tr>
-            </form>
-        </table>
+                <?php
+                $no = 1;
+                $query = mysqli_query($koneksi, "SELECT * FROM portofolio");
+                while ($row = mysqli_fetch_assoc($query)) {
+                    $tanggal = date('d F Y', strtotime($row['waktu_kegiatan']));
+                    echo "<tr>
+                        <td>{$no}</td>
+                        <td>{$row['nama_kegiatan']}</td>
+                        <td>{$tanggal}</td>
+                        <td>
+                            <a href='Bukti/{$row['bukti']}' target='_blank'>
+                            <button class='btn-bukti'>Lihat bukti</button></a>
+                            <button class='btn-edit' data-id='{$row['id']}' data-nama='{$row['nama_kegiatan']}' data-waktu='{$row['waktu_kegiatan']}'>Edit</button>
+                            <a href='hapus.php?id={$row['id']}' onclick=\"return confirm('Yakin ingin menghapus?')\">
+                            <button class='btn-hapus'>Hapus</button>
+                            </a>
+                        </td>
+                    </tr>";
+                    $no++;
+                }
+                ?>
+                <form action="tambah.php" method="POST" enctype="multipart/form-data">
+                    <tr>
+                        <td></td>
+                        <td>
+                            <input type="text" name="nama_kegiatan" placeholder="Nama Kegiatan" required style="width: 95%;">
+                        </td>
+                        <td>
+                            <input type="date" name="waktu_kegiatan" placeholder="Waktu Kegiatan" required style="width: 95%;">
+                        </td>
+                        <td>
+                            <input type="file" name="bukti" required>
+                            <button type="submit" name="simpan" class="btn-bukti" style="margin-top:5px;">Simpan</button>
+                        </td>
+                    </tr>
+                </form>
+            </table>
+        </div>
     </div>
     <div id="modal-confirm" class="modal">
         <div class="modal-content">
