@@ -80,8 +80,9 @@ if (isset($_POST['update'])) {
                         <a href='Bukti/{$row['bukti']}' target='_blank'>
                         <button class='btn-bukti'>Lihat bukti</button></a>
                         <button class='btn-edit' data-id='{$row['id']}' data-nama='{$row['nama_kegiatan']}' data-waktu='{$row['waktu_kegiatan']}'>Edit</button>
+                        <a href='hapus.php?id={$row['id']}' onclick=\"return confirm('Yakin ingin menghapus?')\">
                         <button class='btn-hapus'>Hapus</button>
-                        <a href='hapus.php?id={$row['id']}' onclick=\"return confirm('Yakin ingin menghapus?')\"></a>
+                        </a>
                     </td>
                 </tr>";
                 $no++;
