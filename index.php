@@ -1,5 +1,23 @@
 <?php
 include 'koneksi.php';
+
+if (isset($_POST['update'])) {
+    $id = $_POST['id'];
+    $nama = $_POST['nama_kegiatan'];
+    $waktu = $_POST['waktu_kegiatan'];
+    $bukti = $_FILES['bukti']['name'];
+    $tmp = $_FILES['bukti']['tmp_name'];
+
+    if ($bukti != "" && is_uploaded_file($tmp)) {
+        move_uploaded_file($tmp, "Bukti/" . $bukti);
+        $query = "UPDATE portofolio SET nama_kegiatan='$nama', waktu_kegiatan='$waktu', bukti='$bukti' WHERE id='$id'";
+    } else {
+        $query = "UPDATE portofolio SET nama_kegiatan='$nama', waktu_kegiatan='$waktu' WHERE id='$id'";
+    }
+    mysqli_query($koneksi, $query);
+    echo "<script>window.location='index.php';</script>";
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -9,20 +27,6 @@ include 'koneksi.php';
     <title>Portofolio</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<script>
-document.querySelectorAll('.btn-bukti, .btn-hapus').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-        localStorage.setItem('scrollPos', window.scrollY);
-    });
-});
-
-window.addEventListener('load', function() {
-    if(localStorage.getItem('scrollPos')) {
-        window.scrollTo(0, localStorage.getItem('scrollPos'));
-        localStorage.removeItem('scrollPos');
-    }
-});
-</script>
 <body>
     <header>
         <ul>
@@ -67,17 +71,17 @@ window.addEventListener('load', function() {
             $no = 1;
             $query = mysqli_query($koneksi, "SELECT * FROM portofolio");
             while ($row = mysqli_fetch_assoc($query)) {
+                $tanggal = date('d F Y', strtotime($row['waktu_kegiatan']));
                 echo "<tr>
                     <td>{$no}</td>
                     <td>{$row['nama_kegiatan']}</td>
-                    <td>{$row['waktu_kegiatan']}</td>
+                    <td>{$tanggal}</td>
                     <td>
                         <a href='Bukti/{$row['bukti']}' target='_blank'>
-                            <button class='btn-bukti'>Lihat bukti</button>
-                        </a>
-                        <a href='hapus.php?id={$row['id']}' onclick=\"return confirm('Yakin ingin menghapus?')\">
-                            <button class='btn-hapus'>Hapus</button>
-                        </a>
+                        <button class='btn-bukti'>Lihat bukti</button></a>
+                        <button class='btn-edit' data-id='{$row['id']}' data-nama='{$row['nama_kegiatan']}' data-waktu='{$row['waktu_kegiatan']}'>Edit</button>
+                        <button class='btn-hapus'>Hapus</button>
+                        <a href='hapus.php?id={$row['id']}' onclick=\"return confirm('Yakin ingin menghapus?')\"></a>
                     </td>
                 </tr>";
                 $no++;
@@ -90,7 +94,7 @@ window.addEventListener('load', function() {
                         <input type="text" name="nama_kegiatan" placeholder="Nama Kegiatan" required style="width: 95%;">
                     </td>
                     <td>
-                        <input type="text" name="waktu_kegiatan" placeholder="Waktu Kegiatan" required style="width: 95%;">
+                        <input type="date" name="waktu_kegiatan" placeholder="Waktu Kegiatan" required style="width: 95%;">
                     </td>
                     <td>
                         <input type="file" name="bukti" required>
@@ -107,6 +111,50 @@ window.addEventListener('load', function() {
             <button id="btn-cancel" class="btn-bukti">Batal</button>
         </div>
     </div>
+    <div id="modal-edit" class="modal">
+        <div class="modal-content">
+            <form id="form-edit" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="id" id="edit-id">
+            <p>Edit Portofolio</p>
+            <input type="text" name="nama_kegiatan" id="edit-nama" placeholder="Nama Kegiatan" required><br><br>
+            <input type="date" name="waktu_kegiatan" id="edit-waktu" placeholder="Waktu Kegiatan" required><br><br>
+            <input type="file" name="bukti"><br><small>(Kosongkan jika tidak ingin ganti bukti)</small><br><br>
+            <button type="submit" name="update" class="btn-bukti">Update</button>
+            <button type="button" id="btn-cancel-edit" class="btn-hapus">Batal</button>
+            </form>
+        </div>
+    </div>
+    <script>
+    document.querySelectorAll('.btn-bukti, .btn-hapus').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            localStorage.setItem('scrollPos', window.scrollY);
+        });
+    });
+
+    window.addEventListener('load', function() {
+        if(localStorage.getItem('scrollPos')) {
+            window.scrollTo(0, localStorage.getItem('scrollPos'));
+            localStorage.removeItem('scrollPos');
+        }
+    });
+    document.querySelectorAll('.btn-edit').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            document.getElementById('edit-id').value = btn.getAttribute('data-id');
+            document.getElementById('edit-nama').value = btn.getAttribute('data-nama');
+            document.getElementById('edit-waktu').value = btn.getAttribute('data-waktu');
+            document.getElementById('modal-edit').style.display = 'flex';
+        });
+    });
+    document.getElementById('btn-cancel-edit').onclick = function() {
+        document.getElementById('modal-edit').style.display = 'none';
+    };
+    window.onclick = function(event) {
+        let modal = document.getElementById('modal-edit');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    };
+    </script>
     <div class="opini">
         <h5 id="opini">Opini</h5><hr>
         <div class="opini-item">
